@@ -250,7 +250,10 @@ def instance_outdated_launchtemplate(instance_obj, asg_lt_name, asg_lt_version):
     lt_name = instance_obj['LaunchTemplate']['LaunchTemplateName']
     lt_version = int(instance_obj['LaunchTemplate']['Version'])
 
-    if lt_name != asg_lt_name:
+    if lt_name == '':
+        logger.info(f"Instance id {instance_id} is not using a launch template yet)
+        return True
+    elif lt_name != asg_lt_name:
         logger.info("Instance id {} launch template of '{}' does not match asg launch template of '{}'".format(instance_id, lt_name, asg_lt_name))
         return True
     elif asg_lt_version == "$Latest":
