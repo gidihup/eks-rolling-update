@@ -234,10 +234,7 @@ def instance_outdated_launchconfiguration(instance_obj, asg_lc_name):
 
     if lc_name != asg_lc_name:
         logger.info("Instance id {} launch config of '{}' does not match asg launch config of '{}'".format(instance_id, lc_name, asg_lc_name))
-        return True
-    elif lc_name == 'undefined':
-        logger.info("Instance id {} does not use a launch template yet")
-        return True       
+        return True      
     else:
         logger.info("Instance id {} : OK ".format(instance_id))
         return False
@@ -250,13 +247,15 @@ def instance_outdated_launchtemplate(instance_obj, asg_lt_name, asg_lt_version):
     describe_launch_templates boto3 method (wrapped in get_launch_template).
     """
     instance_id = instance_obj['InstanceId']
-    lt_name = instance_obj['LaunchTemplate']['LaunchTemplateName']
-    lt_version = int(instance_obj['LaunchTemplate']['Version'])
-
-    if lt_name == '':
+    try:
+        lt_name = instance_obj['LaunchTemplate']['LaunchTemplateName']
+    except KeyError:
         logger.info(f"Instance id {instance_id} does not use a launch template yet")
         return True
-    elif lt_name != asg_lt_name:
+
+    lt_version = int(instance_obj['LaunchTemplate']['Version'])
+
+    if lt_name != asg_lt_name:
         logger.info("Instance id {} launch template of '{}' does not match asg launch template of '{}'".format(instance_id, lt_name, asg_lt_name))
         return True
     elif asg_lt_version == "$Latest":
@@ -375,7 +374,7 @@ def plan_asgs(asgs):
                 if instance_outdated_launchconfiguration(instance, asg_lc_name):
                     outdated_instances.append(instance)
             elif launch_type == "LaunchTemplate":
-                if instance_outdated_launchtemplate(instance, asg_lt_name, asg_lt_version) or instance_outdated_launchconfiguration(instance, asg_lc_name):
+                if instance_outdated_launchtemplate(instance, asg_lt_name, asg_lt_version):
                     outdated_instances.append(instance)
         logger.info('Found {} outdated instances'.format(
             len(outdated_instances))
