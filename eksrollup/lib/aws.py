@@ -235,6 +235,9 @@ def instance_outdated_launchconfiguration(instance_obj, asg_lc_name):
     if lc_name != asg_lc_name:
         logger.info("Instance id {} launch config of '{}' does not match asg launch config of '{}'".format(instance_id, lc_name, asg_lc_name))
         return True
+    elif lc_name == '':
+        logger.info("Instance id {} does not use a launch template yet")
+        return True       
     else:
         logger.info("Instance id {} : OK ".format(instance_id))
         return False
