@@ -372,7 +372,7 @@ def plan_asgs(asgs):
                 if instance_outdated_launchconfiguration(instance, asg_lc_name):
                     outdated_instances.append(instance)
             elif launch_type == "LaunchTemplate":
-                if instance_outdated_launchtemplate(instance, asg_lt_name, asg_lt_version):
+                if instance_outdated_launchtemplate(instance, asg_lt_name, asg_lt_version) or instance_outdated_launchconfiguration(instance, asg_lc_name):
                     outdated_instances.append(instance)
         logger.info('Found {} outdated instances'.format(
             len(outdated_instances))
